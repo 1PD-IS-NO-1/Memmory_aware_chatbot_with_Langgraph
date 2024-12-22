@@ -20,3 +20,8 @@ flask_chatbot/
 4. Open the browser and navigate to `http://127.0.0.1:5000`.
 
 Enjoy chatting with your AI-powered chatbot!
+
+
+## chatbot UI
+
+![As we can see that chatbot is using memory](image.png)
