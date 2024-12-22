@@ -1,0 +1,9 @@
+uvicorn
+langgraph  
+langchain-core  
+langchain-community
+pydantic
+python-dotenv
+langhchain_google_genai
+gunicorn
+flask
