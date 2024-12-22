@@ -13,11 +13,10 @@ import os
 load_dotenv()
 # Initialize Flask app
 app = Flask(__name__)
-GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
-TAVILY_API_KEY = os.getenv('TAVILY_API_KEY')
+
 # Set the Google and Tavily API keys
-os.environ['GOOGLE_API_KEY'] = GOOGLE_API_KEY
-os.environ['TAVILY_API_KEY'] = TAVILY_API_KEY
+os.environ['GOOGLE_API_KEY'] = "AIzaSyCF-jMEoZr2ji5kmJvYg4HQGWG--Bq8n84"
+os.environ['TAVILY_API_KEY'] = "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"
 
 # Define StateGraph
 class State(TypedDict):
