@@ -90,11 +90,11 @@ Access the application at: [http://127.0.0.1:5000](http://127.0.0.1:5000)
 ## 6. Interface
 
 ### Chatbot Interface
-![CHATBOT UI](./images-1.png)
+![CHATBOT UI](./image-2.png)
 *Modern interface for stock analysis queries*
 
 ### Analysis Response
-![ANLYZED RESULT](image.png)
+![Analysis Response](./image-1.png)
 *Well-structured and fully analyzed data output*
 
 ## 7. Features
