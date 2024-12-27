@@ -12,38 +12,65 @@ agentic_chatbot
 ├── requirements.txt
 ├── templates|-index.html
 
+## 2. Setup Virtual Environment
 
-## 2. First create a virtual environment(without conda environment)
+Create a virtual environment (without conda):
 
-```
+```bash
 python3 -m venv venv
 ```
 
-## Activate the virtual environment
+Activate the virtual environment:
 
-```
+```bash
+# On macOS/Linux
 source venv/bin/activate
+
+# On Windows
+.\venv\Scripts\activate
 ```
 
-## Install the required packages
+## 3. Install Dependencies
 
-```
+Install the required packages:
+
+```bash
 pip install -r requirements.txt
 ```
-## 4. Generate the Groq API KEY FREE 
-use this link to generate the groq api key.    https://console.groq.com/keys
-set api key in the config.py file.
 
-## Run the application
+## 4. Configure Groq API
 
+1. Generate your free Groq API key at: [https://console.groq.com/keys](https://console.groq.com/keys)
+2. Set the API key in `config.py`:
+```python
+GROQ_API_KEY = "your-api-key-here"
+```
 
+## 5. Run the Application
+
+Start the Flask server:
+
+```bash
 python app.py
+```
 
+Access the application at: [http://127.0.0.1:5000](http://127.0.0.1:5000)
 
-## Access the application
+## 6. Interface
 
-![CHATBOT UI](image.png)
+### Chatbot Interface
+![CHATBOT UI](./images-1.png)
+*Modern interface for stock analysis queries*
 
-## 5. RESPONSE 
+### Analysis Response
+![Analysis Response](./images.png)
+*Well-structured and fully analyzed data output*
 
-![THE RESPONSE IS WELL STRUCTURED AND FULLY ANALYZED DATA](image-1.png)
+## 7. Features
+
+- Real-time stock data analysis
+- Comparative analysis of multiple stocks
+- Historical data visualization
+- Responsive modern UI
+- Markdown support for formatted output
+- Code syntax highlighting
