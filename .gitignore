@@ -2,4 +2,5 @@ bot_env
 app1.py
 bot.py
 chatbot.py
-medical_chatbot
+medical_chatbot\bot_env
+agentic_chatbot\bot_env
