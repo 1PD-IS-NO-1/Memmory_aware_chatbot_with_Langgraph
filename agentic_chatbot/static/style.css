@@ -1,8 +1,161 @@
+/* Global Styles */
+:root {
+    --primary-color: #2563eb;
+    --secondary-color: #1e40af;
+    --background-color: #f8fafc;
+    --sidebar-color: #ffffff;
+    --text-color: #1f2937;
+    --border-color: #e5e7eb;
+}
+
+body.chat-background {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    min-height: 100vh;
+}
+
+/* Layout */
+.chat-container {
+    min-height: 100vh;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    background-color: var(--sidebar-color);
+    padding: 1.5rem;
+    border-right: 1px solid var(--border-color);
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+}
+
+.brand-section {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+}
+
+.brand-section i {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.brand-section h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.new-chat-btn {
+    margin-bottom: 2rem;
+}
+
+.new-chat-btn button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.new-chat-btn button:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Main Content Area */
+.main-content {
+    padding: 2rem;
+    max-height: 100vh;
+    overflow-y: auto;
+}
+
+.chat-area {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.welcome-message {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.welcome-message h1 {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+/* Form Styles */
+.input-card {
+    background-color: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.form-floating {
+    margin-bottom: 1rem;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.25);
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--primary-color);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+    background-color: var(--secondary-color);
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    text-align: center;
+    padding: 2rem;
+}
+
+.loading-spinner p {
+    margin-top: 1rem;
+    color: var(--primary-color);
+}
+
+/* Chat Messages */
+.chat-messages {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.message {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Analysis Results */
 .analysis-result {
-    padding: 20px;
-    background: #fff;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background-color: white;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .analysis-result table {
@@ -13,34 +166,52 @@
 
 .analysis-result th,
 .analysis-result td {
-    padding: 8px;
-    border: 1px solid #dee2e6;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
 }
 
 .analysis-result th {
-    background-color: #f8f9fa;
+    background-color: var(--background-color);
+    font-weight: 600;
 }
 
 .analysis-result pre {
-    background-color: #f8f9fa;
-    padding: 15px;
-    border-radius: 4px;
+    background-color: #282c34;
+    padding: 1rem;
+    border-radius: 0.5rem;
     overflow-x: auto;
+    color: #abb2bf;
 }
 
 .analysis-result code {
-    color: #e83e8c;
-    word-wrap: break-word;
+    font-family: 'Fira Code', monospace;
 }
 
 .analysis-result img {
     max-width: 100%;
     height: auto;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
 }
 
-.analysis-result blockquote {
-    border-left: 4px solid #dee2e6;
-    padding-left: 1rem;
-    margin-left: 0;
-    color: #6c757d;
+/* Responsive Design */
+@media (max-width: 768px) {
+    .sidebar {
+        height: auto;
+        position: static;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .main-content {
+        padding: 1rem;
+    }
+
+    .input-card {
+        padding: 1rem;
+    }
+
+    .welcome-message h1 {
+        font-size: 1.5rem;
+    }
 }
