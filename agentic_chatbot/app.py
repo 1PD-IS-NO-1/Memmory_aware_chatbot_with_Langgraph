@@ -200,4 +200,4 @@ Give also graph and chart by which the response will look justified."""
         }), 500
 
 if __name__ == '__main__':
-    app.run(debug = True)
+    app.run()

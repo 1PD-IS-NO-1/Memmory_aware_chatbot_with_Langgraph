@@ -6,3 +6,4 @@ yfinance
 python-dotenv
 requests
 pycountry
+gunicorn
