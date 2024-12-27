@@ -26,6 +26,9 @@ Enjoy chatting with your AI-powered chatbot!
 
 ![As we can see that chatbot is using memory](image.png)
 
+## Access the chatbot with memory.
+
+https://memmory-aware-chatbot-with-langgraph-11.onrender.com
 
 # AGENTIC CHATBOT
 
@@ -105,3 +108,12 @@ Access the application at: [http://127.0.0.1:5000](http://127.0.0.1:5000)
 - Responsive modern UI
 - Markdown support for formatted output
 - Code syntax highlighting
+
+```bash
+Chatbot Deployment
+```
+
+## 8. Deployed chatbot Link
+
+#### you can access the deployed chatbot here.(Deployed on render cloud)
+https://memmory-aware-chatbot-with-langgraph-12.onrender.com
