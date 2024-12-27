@@ -36,9 +36,9 @@ set api key in the config.py file.
 
 ## Run the application
 
-```
+
 python app.py
-```
+
 
 ## Access the application
 
