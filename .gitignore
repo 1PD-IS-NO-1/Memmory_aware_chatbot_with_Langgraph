@@ -4,3 +4,5 @@ bot.py
 chatbot.py
 medical_chatbot\bot_env
 agentic_chatbot\bot_env
+medical_chatbot/__pycache__
+medical_chatbot/.env
