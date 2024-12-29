@@ -117,3 +117,12 @@ Chatbot Deployment
 
 #### you can access the deployed chatbot here.(Deployed on render cloud)
 https://memmory-aware-chatbot-with-langgraph-12.onrender.com
+
+
+# 3. Medical Chatbot with RAG and Tavily
+
+![Chatbot UI](image-3.png)
+*flask app*
+
+![Chatbot Response UI](image-4.png)
+*Well-structured and fully analyzed data output*
