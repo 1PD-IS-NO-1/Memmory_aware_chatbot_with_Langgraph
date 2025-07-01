@@ -42,13 +42,15 @@ def rate_limit_error(error):
         'message': 'Rate limit exceeded. Please try again later.'
     }), 429
 
-# Handle rate limit exceeded from flask-limiter
-@limiter.error_handler
+# Handle rate limit exceeded from flask-limiter using app error handler
 def rate_limit_handler(e):
     return jsonify({
         'status': 'error',
         'message': f'Rate limit exceeded: {e.description}'
     }), 429
+
+# Register the rate limit handler with the app
+app.register_error_handler(429, rate_limit_handler)
 
 # Function to create agents
 def create_sentiment_agent():
