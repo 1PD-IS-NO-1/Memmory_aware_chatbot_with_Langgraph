@@ -17,11 +17,21 @@ from pydantic import BaseModel, Field
 import warnings
 warnings.filterwarnings("ignore")
 print("api is going to  set")
-# Initialize API keys and environment variables
-os.environ["GOOGLE_API_KEY"] = "AIzaSyD5tZR02ryMjdV3unPEqHzlNFUZuPtSPyk"
-os.environ["TAVILY_API_KEY"] = "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"
-PINECONE_API_KEY = "4654cfdd-d0fc-44d3-b440-70831b204414"
-PINECONE_ENV = "gcp-starter"
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+# Securely loaded from .env
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
+PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+PINECONE_ENV = os.getenv("PINECONE_ENV")
+
+# Optional (only if some SDKs require these in os.environ)
+os.environ["GOOGLE_API_KEY"] = GOOGLE_API_KEY
+os.environ["TAVILY_API_KEY"] = TAVILY_API_KEY
+os.environ["PINECONE_API_KEY"] = PINECONE_API_KEY
+
 print("api is settled.")
 def load_pdf(data: str) -> List[Document]:
     """Load PDF documents from a directory."""
@@ -49,8 +59,6 @@ def process_documents(documents: List[Document]) -> List[Document]:
     return splits
 
 
-# Set environment variables
-os.environ["PINECONE_API_KEY"] = "4654cfdd-d0fc-44d3-b440-70831b204414"
 
 def initialize_vectorstore() -> PineconeVectorStore:
     """Initialize and populate Pinecone vectorstore."""
@@ -96,7 +104,7 @@ def web_search_tool(state: State) -> State:
 
 def generate_response(state: State) -> State:
     """Generate final response using Gemini."""
-    llm = GoogleGenerativeAI(model="gemini-pro")
+    llm = GoogleGenerativeAI(model="gemini-1.5-flash")
     
     # Extract relevant information about allergies from the context
     context_text = "\n".join([doc.page_content for doc in state.context])
