@@ -20,6 +20,36 @@ limiter = Limiter(get_remote_address, app=app)
 # Set Groq API key
 os.environ["GROQ_API_KEY"] = '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'
 
+# Custom error handlers to return JSON instead of HTML
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({
+        'status': 'error',
+        'message': 'Endpoint not found'
+    }), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    return jsonify({
+        'status': 'error',
+        'message': 'Internal server error'
+    }), 500
+
+@app.errorhandler(429)
+def rate_limit_error(error):
+    return jsonify({
+        'status': 'error',
+        'message': 'Rate limit exceeded. Please try again later.'
+    }), 429
+
+# Handle rate limit exceeded from flask-limiter
+@limiter.error_handler
+def rate_limit_handler(e):
+    return jsonify({
+        'status': 'error',
+        'message': f'Rate limit exceeded: {e.description}'
+    }), 429
+
 # Function to create agents
 def create_sentiment_agent():
     return Agent(
@@ -102,25 +132,47 @@ def index():
 @app.route('/analyze', methods=['POST'])
 @limiter.limit("5 per minute")  # Limit requests to 5 per minute per IP
 def analyze():
-    data = request.json
-    company1 = data.get('company1')
-    company2 = data.get('company2')
-    start_date = data.get('startDate')
-    end_date = data.get('endDate')
-
-    agent_team = create_agent_team()
-
-    prompt = f"""
-    Analyze the sentiment for the following companies during {start_date} to {end_date}: {company1}, {company2}.
-
-    1. **Sentiment Analysis**: Search for relevant news and interpret the sentiment for each company. Provide sentiment scores on a scale of 1 to 10.
-
-    2. **Financial Data**: Retrieve stock prices, analyst recommendations, and financial insights.
-
-    3. **Consolidated Analysis**: Combine the insights from sentiment analysis and financial data to assign a final sentiment score (1-10) for each company. Justify the scores with reasoning and provide references.
-    """
-
     try:
+        # Validate request content type
+        if not request.is_json:
+            return jsonify({
+                'status': 'error',
+                'message': 'Request must be JSON'
+            }), 400
+        
+        data = request.json
+        
+        # Validate required fields
+        if not data:
+            return jsonify({
+                'status': 'error',
+                'message': 'No data provided'
+            }), 400
+        
+        company1 = data.get('company1')
+        company2 = data.get('company2')
+        start_date = data.get('startDate')
+        end_date = data.get('endDate')
+        
+        # Validate required fields
+        if not all([company1, company2, start_date, end_date]):
+            return jsonify({
+                'status': 'error',
+                'message': 'Missing required fields: company1, company2, startDate, endDate'
+            }), 400
+
+        agent_team = create_agent_team()
+
+        prompt = f"""
+        Analyze the sentiment for the following companies during {start_date} to {end_date}: {company1}, {company2}.
+
+        1. **Sentiment Analysis**: Search for relevant news and interpret the sentiment for each company. Provide sentiment scores on a scale of 1 to 10.
+
+        2. **Financial Data**: Retrieve stock prices, analyst recommendations, and financial insights.
+
+        3. **Consolidated Analysis**: Combine the insights from sentiment analysis and financial data to assign a final sentiment score (1-10) for each company. Justify the scores with reasoning and provide references.
+        """
+
         response_stream = retry_with_backoff(agent_team, prompt)
         full_response = []
 
@@ -131,6 +183,13 @@ def analyze():
 
         # Join all response parts
         complete_response = ''.join(full_response)
+        
+        # Ensure we have a response
+        if not complete_response:
+            return jsonify({
+                'status': 'error',
+                'message': 'No response generated from agents'
+            }), 500
 
         return jsonify({
             'status': 'success',
@@ -139,11 +198,17 @@ def analyze():
 
     except Exception as e:
         print(f"Error occurred: {str(e)}")
+        # Always return JSON, never let Flask return HTML error pages
         return jsonify({
             'status': 'error',
-            'message': str(e)
+            'message': f'An error occurred: {str(e)}'
         }), 500
+
+# Additional route to handle OPTIONS requests (for CORS preflight)
+@app.route('/analyze', methods=['OPTIONS'])
+def analyze_options():
+    return jsonify({'status': 'ok'}), 200
 
 # Run Flask app
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)  # Added debug=True for development
