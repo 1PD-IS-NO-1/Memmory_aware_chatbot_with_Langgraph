@@ -10,6 +10,10 @@ import logging
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from config import Config
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -24,9 +28,11 @@ CORS(app, resources={r"/*": {"origins": "*"}})  # Allow all origins for debuggin
 limiter = Limiter(get_remote_address, app=app)
 
 # Verify Groq API key
-if not os.environ.get("GROQ_API_KEY"):
-    logger.error("GROQ_API_KEY is not set")
+groq_api_key = os.environ.get("GROQ_API_KEY")
+if not groq_api_key:
+    logger.error("GROQ_API_KEY is not set. Check .env file or Render environment variables.")
     raise EnvironmentError("GROQ_API_KEY environment variable is missing")
+logger.debug(f"GROQ_API_KEY loaded successfully: {groq_api_key[:4]}****")
 
 # Function to create agents
 def create_sentiment_agent():
