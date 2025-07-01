@@ -28,7 +28,7 @@ Enjoy chatting with your AI-powered chatbot!
 
 ## Access the chatbot with memory.
 
-[https://memmory-aware-chatbot-with-langgraph-11.onrender.com](https://memmory-aware-chatbot-with-langgraph-24.onrender.com/)
+https://memmory-aware-chatbot-with-langgraph-24.onrender.com
 
 # AGENTIC CHATBOT
 
