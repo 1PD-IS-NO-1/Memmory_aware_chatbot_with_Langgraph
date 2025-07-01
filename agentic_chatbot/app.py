@@ -27,7 +27,7 @@ def create_sentiment_agent():
     return Agent(
         name="Sentiment Agent",
         role="Search and interpret news articles.",
-        model=Groq(id="llama3-70b-8192"),
+        model=Groq(id="llama-3.3-70b-versatile"),
         tools=[GoogleSearch()],
         instructions=[
             "Find relevant news articles for each company and analyze the sentiment.",
@@ -42,7 +42,7 @@ def create_finance_agent():
     return Agent(
         name="Finance Agent",
         role="Get financial data and interpret trends.",
-        model=Groq(id="llama3-70b-8192"),
+        model=Groq(id="llama-3.3-70b-versatile"),
         tools=[YFinanceTools(stock_price=True, analyst_recommendations=True, company_info=True)],
         instructions=[
             "Retrieve stock prices, analyst recommendations, and key financial data.",
@@ -56,7 +56,7 @@ def create_analyst_agent():
     return Agent(
         name="Analyst Agent",
         role="Ensure thoroughness and draw conclusions.",
-        model=Groq(id="llama3-70b-8192"),
+        model=Groq(id="llama-3.3-70b-versatile"),
         instructions=[
             "Check outputs for accuracy and completeness.",
             "Synthesize data to provide a final sentiment score (1-10) with justification.",
@@ -71,7 +71,7 @@ def create_agent_team():
     finance_agent = create_finance_agent()
     analyst_agent = create_analyst_agent()
     return Agent(
-        model=Groq(id="llama3-70b-8192"),
+        model=Groq(id="llama-3.3-70b-versatile"),
         team=[sentiment_agent, finance_agent, analyst_agent],
         instructions=[
             "Combine the expertise of all agents to provide a cohesive, well-supported response.",
