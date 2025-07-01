@@ -1,8 +1,7 @@
-langgraph  ==0.0.11
-langchain-core  ==0.1.23
-langchain-community ==0.0.20
+langchain_google_genai
+langgraph 
+langchain-core  
+langchain-community 
 python-dotenv
-pip
-langhchain_google_genai
 gunicorn
 flask
