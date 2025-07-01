@@ -3,6 +3,6 @@ langchain-core  ==0.1.23
 langchain-community ==0.0.20
 python-dotenv
 pip
-langhchain_google_genai ==0.0.5
+langhchain_google_genai
 gunicorn
 flask
