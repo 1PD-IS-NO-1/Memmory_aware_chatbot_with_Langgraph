@@ -26,7 +26,7 @@ graph_builder = StateGraph(State)
 
 tool = TavilySearchResults(max_results=2)
 tools = [tool]
-llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-001")
+llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
 llm_with_tools = llm.bind_tools(tools)
 
 def tools_condition(state: State):
