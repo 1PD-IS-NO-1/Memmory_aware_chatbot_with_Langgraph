@@ -7,3 +7,4 @@ python-dotenv
 requests
 pycountry
 gunicorn
+Flask-Limiter
