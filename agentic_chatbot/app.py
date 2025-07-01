@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify
+from flask_cors import CORS
 from phi.agent import Agent, RunResponse
 from phi.tools.googlesearch import GoogleSearch
 from phi.tools.yfinance import YFinanceTools
@@ -13,39 +14,13 @@ from phi.utils.pprint import pprint_run_response
 # Initialize Flask app
 app = Flask(__name__)
 app.config.from_object(Config)
+CORS(app)  # Enable CORS for all routes
 
-# Set rate limiter with storage backend for production
-limiter = Limiter(
-    app=app,
-    key_func=get_remote_address,
-    default_limits=["200 per day", "50 per hour"],
-    storage_uri="memory://"  # Use memory storage to avoid warnings
-)
+# Set rate limiter
+limiter = Limiter(get_remote_address, app=app)
 
-# Set Groq API key from environment variable (more secure)
-os.environ["GROQ_API_KEY"] = os.getenv('GROQ_API_KEY', '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')
-
-# Custom error handlers to ensure JSON responses
-@app.errorhandler(404)
-def not_found(error):
-    return jsonify({
-        'status': 'error',
-        'message': 'Endpoint not found'
-    }), 404
-
-@app.errorhandler(500)
-def internal_error(error):
-    return jsonify({
-        'status': 'error',
-        'message': 'Internal server error occurred'
-    }), 500
-
-@app.errorhandler(429)
-def rate_limit_error(error):
-    return jsonify({
-        'status': 'error',
-        'message': 'Rate limit exceeded. Please try again later.'
-    }), 429
+# Set Groq API key (ensure this is set in Render's environment variables)
+os.environ["GROQ_API_KEY"] = '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'
 
 # Function to create agents
 def create_sentiment_agent():
@@ -92,28 +67,24 @@ def create_analyst_agent():
     )
 
 def create_agent_team():
-    try:
-        sentiment_agent = create_sentiment_agent()
-        finance_agent = create_finance_agent()
-        analyst_agent = create_analyst_agent()
-        return Agent(
-            model=Groq(id="llama3-70b-8192"),
-            team=[sentiment_agent, finance_agent, analyst_agent],
-            instructions=[
-                "Combine the expertise of all agents to provide a cohesive, well-supported response.",
-                "Always include references and dates for all data points and sources.",
-                "Present all data in structured tables for clarity.",
-                "Explain the methodology used to arrive at the sentiment scores.",
-            ],
-            show_tool_calls=True,
-            markdown=True,
-        )
-    except Exception as e:
-        print(f"Error creating agent team: {str(e)}")
-        raise
+    sentiment_agent = create_sentiment_agent()
+    finance_agent = create_finance_agent()
+    analyst_agent = create_analyst_agent()
+    return Agent(
+        model=Groq(id="llama3-70b-8192"),
+        team=[sentiment_agent, finance_agent, analyst_agent],
+        instructions=[
+            "Combine the expertise of all agents to provide a cohesive, well-supported response.",
+            "Always include references and dates for all data points and sources.",
+            "Present all data in structured tables for clarity.",
+            "Explain the methodology used to arrive at the sentiment scores.",
+        ],
+        show_tool_calls=True,
+        markdown=True,
+    )
 
 # Retry logic for handling rate limits
-def retry_with_backoff(agent_team, prompt, retries=3, backoff_factor=2):
+def retry_with_backoff(agent_team, prompt, retries=5, backoff_factor=2):
     for attempt in range(retries):
         try:
             return agent_team.run(prompt, stream=True)
@@ -128,81 +99,47 @@ def retry_with_backoff(agent_team, prompt, retries=3, backoff_factor=2):
 # Routes
 @app.route('/')
 def index():
-    try:
-        return render_template('index.html')
-    except Exception as e:
-        return jsonify({
-            'status': 'error',
-            'message': 'Template not found or error rendering page'
-        }), 500
-
-@app.route('/health')
-def health_check():
-    """Health check endpoint for deployment monitoring"""
-    return jsonify({
-        'status': 'healthy',
-        'message': 'Application is running'
-    }), 200
+    return render_template('index.html')
 
 @app.route('/analyze', methods=['POST'])
-@limiter.limit("5 per minute")  # Limit requests to 5 per minute per IP
+@limiter.limit("10 per minute")  # Increased limit for testing
 def analyze():
     try:
-        # Validate request
-        if not request.is_json:
-            return jsonify({
-                'status': 'error',
-                'message': 'Content-Type must be application/json'
-            }), 400
-        
-        data = request.get_json()
-        if not data:
-            return jsonify({
-                'status': 'error',
-                'message': 'No JSON data provided'
-            }), 400
-        
-        # Extract and validate parameters
-        company1 = data.get('company1')
-        company2 = data.get('company2')
-        start_date = data.get('startDate')
-        end_date = data.get('endDate')
-        
-        if not all([company1, company2, start_date, end_date]):
+        data = request.json
+        if not data or not all(key in data for key in ['company1', 'company2', 'startDate', 'endDate']):
             return jsonify({
                 'status': 'error',
                 'message': 'Missing required fields: company1, company2, startDate, endDate'
             }), 400
 
-        # Create agent team
+        company1 = data.get('company1')
+        company2 = data.get('company2')
+        start_date = data.get('startDate')
+        end_date = data.get('endDate')
+
         agent_team = create_agent_team()
 
         prompt = f"""
         Analyze the sentiment for the following companies during {start_date} to {end_date}: {company1}, {company2}.
-
         1. **Sentiment Analysis**: Search for relevant news and interpret the sentiment for each company. Provide sentiment scores on a scale of 1 to 10.
-
         2. **Financial Data**: Retrieve stock prices, analyst recommendations, and financial insights.
-
         3. **Consolidated Analysis**: Combine the insights from sentiment analysis and financial data to assign a final sentiment score (1-10) for each company. Justify the scores with reasoning and provide references.
         """
 
-        # Execute analysis with retry logic
         response_stream = retry_with_backoff(agent_team, prompt)
         full_response = []
 
-        # Collect streamed response
         for resp in response_stream:
             if isinstance(resp, RunResponse) and isinstance(resp.content, str):
                 full_response.append(resp.content)
+            else:
+                print(f"Unexpected response part: {resp}")
 
-        # Join all response parts
         complete_response = ''.join(full_response)
-        
         if not complete_response:
             return jsonify({
                 'status': 'error',
-                'message': 'No response generated from analysis'
+                'message': 'No response content received from agent'
             }), 500
 
         return jsonify({
@@ -211,40 +148,12 @@ def analyze():
         })
 
     except Exception as e:
-        error_msg = str(e)
-        print(f"Error in analyze endpoint: {error_msg}")
-        
-        # Return appropriate error based on exception type
-        if "rate limit" in error_msg.lower():
-            return jsonify({
-                'status': 'error',
-                'message': 'Rate limit exceeded. Please try again later.'
-            }), 429
-        elif "timeout" in error_msg.lower():
-            return jsonify({
-                'status': 'error',
-                'message': 'Request timeout. Please try again.'
-            }), 408
-        else:
-            return jsonify({
-                'status': 'error',
-                'message': f'Analysis failed: {error_msg}'
-            }), 500
-
-# Handle OPTIONS requests for CORS
-@app.route('/analyze', methods=['OPTIONS'])
-def analyze_options():
-    return jsonify({'status': 'ok'}), 200
-
-# Global exception handler
-@app.errorhandler(Exception)
-def handle_exception(e):
-    print(f"Unhandled exception: {str(e)}")
-    return jsonify({
-        'status': 'error',
-        'message': 'An unexpected error occurred'
-    }), 500
+        print(f"Error in /analyze: {str(e)}")
+        return jsonify({
+            'status': 'error',
+            'message': f'Server error: {str(e)}'
+        }), 500
 
 # Run Flask app
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    app.run(debug=True)  # Debug mode for local testing only
