@@ -19,18 +19,22 @@ warnings.filterwarnings("ignore")
 print("api is going to  set")
 import os
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv(override=True)
 
-# Securely loaded from .env
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
 PINECONE_ENV = os.getenv("PINECONE_ENV")
 
 # Optional (only if some SDKs require these in os.environ)
-os.environ["GOOGLE_API_KEY"] = GOOGLE_API_KEY
+os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY")
 os.environ["TAVILY_API_KEY"] = TAVILY_API_KEY
-os.environ["PINECONE_API_KEY"] = PINECONE_API_KEY
+if PINECONE_API_KEY:
+    os.environ["PINECONE_API_KEY"] = PINECONE_API_KEY
+else:
+    raise ValueError("PINECONE_API_KEY is not set in your .env file.")
+
 
 print("api is settled.")
 def load_pdf(data: str) -> List[Document]:
