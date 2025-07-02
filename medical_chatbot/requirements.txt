@@ -7,5 +7,5 @@ pinecone-client==5.0.1
 pinecone==5.3.1
 python-dotenv
 pydantic
-langchain-pinecone==0.2.0
+langchain-pinecone==0.2.8
 gunicorn==21.2.0
