@@ -28,7 +28,7 @@ PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
 PINECONE_ENV = os.getenv("PINECONE_ENV")
 
 # Optional (only if some SDKs require these in os.environ)
-os.environ["GOOGLE_API_KEY"] = "AIzaSyB1cHw2buYRcq7qOIAUkpN1nJ2YmVYSiNg"
+os.environ["GOOGLE_API_KEY"] = GOOGLE_API_KEY
 os.environ["TAVILY_API_KEY"] = TAVILY_API_KEY
 if PINECONE_API_KEY:
     os.environ["PINECONE_API_KEY"] = PINECONE_API_KEY
